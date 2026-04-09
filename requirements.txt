@@ -1,0 +1,9 @@
+pip freeze > requirements.txt
+```
+
+Or create it manually with just what's needed:
+```
+tensorflow
+flask
+numpy
+werkzeug

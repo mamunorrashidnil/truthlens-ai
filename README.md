@@ -106,16 +106,6 @@ python src/predict.py --model models/deepfake_xception_model.keras --image path/
 
 ---
 
-## Feedback & Dataset Growth
-
-After each prediction, the UI shows **"Was this analysis correct?"** buttons.
-
-- **Yes** → the image is filed under the predicted label in `dataset/`
-- **No** → the image is filed under the opposite label
-
-This lets you continuously grow and correct your training dataset over time.
-
----
 
 ## License
 

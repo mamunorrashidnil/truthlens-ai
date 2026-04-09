@@ -1,259 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TruthLens AI</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #d7f0ff, #a6d8ff);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(12px);
-            border-radius: 16px;
-            padding: 35px;
-            width: 420px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            margin: 0;
-            color: #0b4f82;
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: #3b6f94;
-            margin-bottom: 25px;
-        }
-
-        .drop-zone {
-            border: 2px dashed #0099ff;
-            border-radius: 12px;
-            padding: 25px;
-            cursor: pointer;
-            transition: 0.3s;
-            background: rgba(255, 255, 255, 0.3);
-            margin-bottom: 20px;
-        }
-
-        .drop-zone:hover,
-        .drop-zone.drag-over {
-            background: rgba(0, 153, 255, 0.1);
-            border-color: #0077cc;
-        }
-
-        .drop-zone-text {
-            font-size: 14px;
-            color: #0b4f82;
-            pointer-events: none;
-        }
-
-        #preview-img {
-            max-width: 100%;
-            max-height: 150px;
-            border-radius: 8px;
-            margin-top: 10px;
-            display: none;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        button {
-            background: linear-gradient(135deg, #0099ff, #0077cc);
-            border: none;
-            padding: 12px 22px;
-            color: white;
-            font-size: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-            width: 100%;
-            font-weight: bold;
-        }
-
-        button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 15px rgba(0, 153, 255, 0.3);
-        }
-
-        .error-box {
-            margin-top: 15px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            background: #ffeaea;
-            color: #cc2f2f;
-            font-size: 13px;
-        }
-
-        .result-box {
-            margin-top: 25px;
-            padding: 18px;
-            border-radius: 12px;
-            background: white;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 14px;
-            margin-top: 8px;
-        }
-
-        .real {
-            background: #e6f9f0;
-            color: #1b8f5a;
-        }
-
-        .fake {
-            background: #ffeaea;
-            color: #cc2f2f;
-        }
-
-        .confidence {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #555;
-        }
-
-        .feedback-area {
-            margin-top: 15px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
-
-        .fb-btn {
-            width: 45%;
-            padding: 8px;
-            font-size: 12px;
-        }
-
-        .fb-yes {
-            background: #28a745;
-            margin-right: 5%;
-        }
-
-        .fb-no {
-            background: #dc3545;
-        }
-
-        .footer {
-            margin-top: 18px;
-            font-size: 11px;
-            color: #4f7fa3;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
+<div class="bg-mesh"><span></span></div>
 
-    <div class="card">
-        <h1>TruthLens AI</h1>
-        <div class="subtitle">Deepfake Image Detection System</div>
+<div class="page">
 
-        <form id="upload-form" action="/" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" id="file-input" accept="image/*" required style="display: none;">
+    <!-- Top-left brand -->
+    <header class="brand">
+        <div class="brand-logo">🔍</div>
+        <div>
+            <div class="brand-name">TruthLens AI</div>
+            <div class="brand-sub">Deepfake Image Detection System</div>
+        </div>
+    </header>
+
+    <!-- Center card -->
+    <div class="center-card">
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" id="tab-image" type="button">🖼 Image</button>
+            <button class="tab"        id="tab-video" type="button">🎬 Video</button>
+        </div>
+
+        <!-- Image panel -->
+        <div class="panel" id="panel-image">
+
+            <!-- Drop zone: contains gauge overlay + preview image -->
             <div class="drop-zone" id="drop-zone">
-                <div id="drop-text" class="drop-zone-text">Drag & Drop Image Here<br>or Click to Browse</div>
+                <input type="file" id="file-input" accept="image/*" style="display:none;">
+
+                <!-- Clear / change button (shown when image loaded) -->
+                <button class="clear-btn" id="clear-btn" type="button" title="Remove image" style="display:none;">
+                    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+
+                <!-- Gauge overlay (shown above image after analysis) -->
+                <div class="gauge-overlay" id="gauge-overlay">
+                    <div class="gauge-wrap">
+                        <svg class="gauge-svg" viewBox="0 0 260 148"
+                             xmlns="http://www.w3.org/2000/svg" overflow="visible">
+                            <defs>
+                                <linearGradient id="g-real" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%"   stop-color="#00d68f"/>
+                                    <stop offset="100%" stop-color="#00b87a"/>
+                                </linearGradient>
+                                <linearGradient id="g-fake" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%"   stop-color="#ff758a"/>
+                                    <stop offset="100%" stop-color="#e8365d"/>
+                                </linearGradient>
+                                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="3" result="b"/>
+                                    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                            </defs>
+                            <!-- Track -->
+                            <path class="gauge-track"
+                                  d="M 14 140 A 116 116 0 1 1 246 140"/>
+                            <!-- Fill arc -->
+                            <path id="gauge-fill" class="gauge-fill"
+                                  d="M 14 140 A 116 116 0 1 1 246 140"
+                                  stroke="url(#g-real)"
+                                  stroke-dasharray="0 999"
+                                  filter="url(#glow)"/>
+                            <!-- Scale ticks -->
+                            <text x="6"   y="138" class="g-scale">0</text>
+                            <text x="123" y="16"  class="g-scale" text-anchor="middle">50%</text>
+                            <text x="252" y="138" class="g-scale" text-anchor="end">100</text>
+                        </svg>
+                        <div class="gauge-center">
+                            <div class="gauge-pct" id="gauge-pct">0%</div>
+                            <div class="gauge-lbl" id="gauge-lbl">CONFIDENCE</div>
+                        </div>
+                    </div>
+                    <div class="verdict-badge" id="verdict-badge"></div>
+                </div>
+
+                <!-- Empty state prompt -->
+                <div id="drop-text" class="dz-text">
+                    <svg class="dz-icon" viewBox="0 0 64 64" fill="none">
+                        <circle cx="32" cy="32" r="30"
+                            fill="rgba(79,110,247,0.07)"
+                            stroke="rgba(79,110,247,0.25)"
+                            stroke-width="1.5" stroke-dasharray="5 4"/>
+                        <path d="M32 42V24M23 33l9-9 9 9"
+                            stroke="#4f6ef7" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 46h20"
+                            stroke="#4f6ef7" stroke-width="2.5"
+                            stroke-linecap="round"/>
+                    </svg>
+                    <p class="dz-main"><strong>Drag &amp; Drop</strong> image here</p>
+                    <p class="dz-browse">or <span id="browse-link">click to browse</span></p>
+                    <p class="dz-paste">or <kbd>Ctrl+V</kbd> to paste from clipboard</p>
+                    <p class="dz-formats">JPG · PNG · WEBP · GIF · BMP</p>
+                </div>
+
+                <!-- Preview image (shown after file selected) -->
                 <img id="preview-img" src="#" alt="Preview">
             </div>
-            <button type="submit">Analyze Image</button>
-        </form>
 
-        {% if error %}
-        <div class="error-box">{{ error }}</div>
-        {% endif %}
+            <!-- Image metadata bar -->
+            <div class="img-meta" id="img-meta" style="display:none;"></div>
 
-        {% if prediction %}
-        <div class="result-box">
-            <div style="font-weight: bold; color: #444;">Detection Result</div>
-            <div class="badge {{ 'real' if prediction == 'Real' else 'fake' }}">
-                {{ '✔ Real Image' if prediction == 'Real' else '⚠ Deepfake Detected' }}
-            </div>
-            <div class="confidence">AI Confidence: <strong>{{ confidence }}%</strong></div>
-
-            {% if feedback_enabled %}
-            <div class="feedback-area">
-                <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Was this analysis correct?</p>
-                <button class="fb-btn fb-yes" type="button" onclick="sendFeedback(true)">✔ Yes</button>
-                <button class="fb-btn fb-no"  type="button" onclick="sendFeedback(false)">✘ No</button>
-            </div>
-            {% endif %}
+            <button id="analyze-btn" type="button" style="display:none;">Analyze Image</button>
+            <div class="error-box" id="error-box"></div>
         </div>
-        {% endif %}
 
-        <div class="footer">Powered by TruthLens AI</div>
+        <!-- Video panel -->
+        <div class="panel hidden" id="panel-video">
+            <div class="coming-soon">
+                <div class="cs-icon">🎬</div>
+                <div class="cs-title">Video Detection Coming Soon</div>
+                <div class="cs-sub">Frame-by-frame deepfake analysis</div>
+            </div>
+        </div>
+
     </div>
 
-    <script>
-        const dropZone  = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('file-input');
-        const previewImg = document.getElementById('preview-img');
-        const dropText  = document.getElementById('drop-text');
+    <footer class="footer">Powered by <strong>TruthLens AI</strong> · Xception Deep Learning</footer>
+</div>
 
-        function showPreview(file) {
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImg.src = e.target.result;
-                previewImg.style.display = 'block';
-                dropText.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        dropZone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', () => showPreview(fileInput.files[0]));
-
-        ['dragover', 'dragleave', 'drop'].forEach(name => {
-            dropZone.addEventListener(name, (e) => { e.preventDefault(); e.stopPropagation(); });
-        });
-
-        dropZone.addEventListener('dragover',  () => dropZone.classList.add('drag-over'));
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-
-        dropZone.addEventListener('drop', (e) => {
-            dropZone.classList.remove('drag-over');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
-                showPreview(files[0]);
-            }
-        });
-
-        // Feedback — only defined when a prediction is present
-        {% if prediction and feedback_enabled %}
-        function sendFeedback(isCorrect) {
-            fetch('/feedback', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    filename:   {{ filename | tojson }},
-                    label:      {{ prediction | tojson }},
-                    is_correct: isCorrect
-                })
-            })
-            .then(res => res.json())
-            .then(data => alert(data.message || data.status))
-            .catch(() => alert('Feedback could not be sent. Please try again.'));
-        }
-        {% endif %}
-    </script>
-
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
-
 </html>
