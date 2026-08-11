@@ -4,6 +4,7 @@ import base64
 import uuid
 import threading
 
+#pip install -r requirements.txt
 import numpy as np
 import tensorflow as tf
 from flask import Flask, jsonify, render_template, request, send_from_directory

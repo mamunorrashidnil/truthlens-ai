@@ -1,9 +1,5 @@
-pip freeze > requirements.txt
-```
-
-Or create it manually with just what's needed:
-```
-tensorflow
-flask
-numpy
-werkzeug
+tensorflow==2.16.1
+flask==3.0.0
+numpy==1.26.4
+werkzeug==3.0.1
+Pillow==10.4.0
